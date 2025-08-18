@@ -3,48 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Marketing Analytics Portfolio</title> 
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 0;
-      background-color: #f9fafc;
-      color: #333;
-    }
-    header {
-      background-color: #4285f4;
-      color: white;
-      padding: 30px;
-      text-align: center;
-    }
-    h1, h2 {
-      margin: 10px 0;
-    }
-    section {
-      padding: 30px;
-      max-width: 900px;
-      margin: auto;
-    }
-    .card {
-      background: white;
-      padding: 20px;
-      margin: 20px 0;
-      border-radius: 8px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-    }
-    a {
-      color: #4285f4;
-      text-decoration: none;
-      font-weight: bold;
-    }
-    .charts img {
-      width: 100%;
-      max-width: 500px;
-      margin: 10px;
-      border-radius: 6px;
-    }
-  </style>
+  <title>Marketing Analytics Portfolio</title>
+  <!-- Link external CSS -->
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
@@ -62,39 +23,85 @@
         Results are visualized and hosted here as a portfolio project.
       </p>
     </div>
-<div class="charts">
-  <img src="charts/Device and Conversion_Rate.png" alt="Conversion Rate by Device">
-  <img src="charts/Revenue Generated via Different Medium.png" alt="Traffic Sources">
-  <img src="charts/Top 10 Products.png" alt="Top Products by Revenue">
-</div>
-
-<style>
-  .charts img {
-    width: 100%;
-    max-width: 500px;
-    margin: 10px;
-    border-radius: 6px;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-  }
-</style>
-
-   
 
     <div class="card">
-      <h2>🛠️ SQL Queries</h2>
-      <p>Find all queries in the <a href="sql/">SQL folder</a>.</p>
-      <p>Example: <code>revenue_sources.sql</code></p>
+      <h2>📌 Key Insights</h2>
+      <ul>
+        <li>🌐 <b>Traffic Sources:</b> Google Organic Search and Direct visits drove the highest revenue.</li>
+        <li>💻 <b>Device Performance:</b> Mobile had the highest conversion rate (1.67%), followed by Desktop (1.56%).</li>
+        <li>🛍️ <b>Top Products:</b> The Google Zip Hoodie and Crewneck Sweatshirt were top revenue contributors.</li>
+      </ul>
     </div>
+
+<div class="card">
+  <h2>📊 Analysis & Queries</h2>
+
+  <h3>📈 Charts & Visualizations</h3>
+  <div class="charts">
+    <img src="charts/Device and Conversion_Rate.png" alt="Conversion Rate by Device">
+    <img src="charts/Revenue Generated via Different Medium.png" alt="Traffic Sources">
+    <img src="charts/Top 10 Products.png" alt="Top Products by Revenue">
+  </div>
+
+  <h3>🛠️ SQL Queries</h3>
+  <p>Click below to expand and view the SQL code used for each analysis:</p>
+
+  <details>
+    <summary>Revenue Sources Query</summary>
+    <pre><code>
+SELECT
+  traffic_source.source AS source,
+  traffic_source.medium AS medium,
+  SUM(ecommerce.purchase_revenue_in_usd) AS revenue_usd
+FROM `bigquery-public-data.google_analytics_sample.ga_sessions_20170801`
+WHERE ecommerce.transaction_id IS NOT NULL
+GROUP BY source, medium
+ORDER BY revenue_usd DESC;
+    </code></pre>
+  </details>
+
+  <details>
+    <summary>Conversion Rate Query</summary>
+    <pre><code>
+SELECT
+  device.deviceCategory AS device_category,
+  COUNT(DISTINCT fullVisitorId) AS sessions,
+  COUNT(ecommerce.transaction_id) AS purchases,
+  SAFE_DIVIDE(COUNT(ecommerce.transaction_id), COUNT(DISTINCT fullVisitorId)) AS conversion_rate
+FROM `bigquery-public-data.google_analytics_sample.ga_sessions_20170801`
+GROUP BY device_category
+ORDER BY conversion_rate DESC;
+    </code></pre>
+  </details>
+
+  <details>
+    <summary>Top Products Query</summary>
+    <pre><code>
+SELECT
+  p.v2ProductName AS product_name,
+  SUM(p.productQuantity) AS total_units,
+  SUM(p.productRevenue/1000000) AS revenue_usd
+FROM `bigquery-public-data.google_analytics_sample.ga_sessions_20170801`, UNNEST(hits) AS h, UNNEST(h.product) AS p
+WHERE p.productRevenue IS NOT NULL
+GROUP BY product_name
+ORDER BY revenue_usd DESC
+LIMIT 10;
+    </code></pre>
+  </details>
+</div>
+
+
 
     <div class="card">
       <h2>🌐 Links</h2>
       <p>💻 <a href="https://github.com/Vanshika4111/marketing-analytics-portfolio">GitHub Repository</a></p>
-      <p>🚀 <a href="https://vanshika4111.github.io/marketing-analytics-portfolio/">Live Project</a></p>
+
     </div>
   </section>
 
 </body>
 </html>
+
 
 
 

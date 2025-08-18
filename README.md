@@ -43,6 +43,7 @@ The final results were visualized in **Google Sheets charts** and presented in a
   - top_products.sql
 - index.html # Portfolio website (GitHub Pages)
 - README.md # Project documentation
+- style.css # For styling of website
 
 ---
 

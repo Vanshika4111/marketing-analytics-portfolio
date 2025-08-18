@@ -1,0 +1,1 @@
+"SELECT trafficSource.source, trafficSource.medium, SUM(totals.totalTransactionRevenue)/1000000 AS revenue_usd FROM \`bigquery-public-data.google_analytics_sample.ga_sessions_20170801\` WHERE totals.totalTransactionRevenue IS NOT NULL GROUP BY source, medium ORDER BY revenue_usd DESC LIMIT 10;" 

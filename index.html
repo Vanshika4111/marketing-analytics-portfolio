@@ -53,8 +53,8 @@ SELECT
   traffic_source.source AS source,
   traffic_source.medium AS medium,
   SUM(ecommerce.purchase_revenue_in_usd) AS revenue_usd
-FROM `bigquery-public-data.google_analytics_sample.ga_sessions_20170801`
-WHERE ecommerce.transaction_id IS NOT NULL
+FROM `bigquery-public-data.ga4_obfuscated_sample_ecommerce.events_*`
+WHERE event_name = 'purchase'
 GROUP BY source, medium
 ORDER BY revenue_usd DESC;
     </code></pre>
@@ -64,11 +64,11 @@ ORDER BY revenue_usd DESC;
     <summary>Conversion Rate Query</summary>
     <pre><code>
 SELECT
-  device.deviceCategory AS device_category,
-  COUNT(DISTINCT fullVisitorId) AS sessions,
-  COUNT(ecommerce.transaction_id) AS purchases,
-  SAFE_DIVIDE(COUNT(ecommerce.transaction_id), COUNT(DISTINCT fullVisitorId)) AS conversion_rate
-FROM `bigquery-public-data.google_analytics_sample.ga_sessions_20170801`
+  device.category AS device_category,
+  COUNTIF(event_name = 'session_start') AS sessions,
+  COUNTIF(event_name = 'purchase') AS purchases,
+  COUNTIF(event_name = 'purchase') / COUNTIF(event_name = 'session_start') AS conversion_rate
+FROM `bigquery-public-data.ga4_obfuscated_sample_ecommerce.events_*`
 GROUP BY device_category
 ORDER BY conversion_rate DESC;
     </code></pre>
@@ -78,14 +78,16 @@ ORDER BY conversion_rate DESC;
     <summary>Top Products Query</summary>
     <pre><code>
 SELECT
-  p.v2ProductName AS product_name,
-  SUM(p.productQuantity) AS total_units,
-  SUM(p.productRevenue/1000000) AS revenue_usd
-FROM `bigquery-public-data.google_analytics_sample.ga_sessions_20170801`, UNNEST(hits) AS h, UNNEST(h.product) AS p
-WHERE p.productRevenue IS NOT NULL
+  item.item_name AS product_name,
+  SUM(item.quantity) AS total_units,
+  SUM(item.quantity * item.price_in_usd) AS revenue_usd
+FROM `bigquery-public-data.ga4_obfuscated_sample_ecommerce.events_*`,
+UNNEST(items) AS item
+WHERE event_name = 'purchase'
 GROUP BY product_name
 ORDER BY revenue_usd DESC
 LIMIT 10;
+
     </code></pre>
   </details>
 </div>
